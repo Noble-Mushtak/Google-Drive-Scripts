@@ -4,3 +4,6 @@ The following scripts are automations of some Google Drive tasks which may take 
 The below list explains the function of each script:
 
  * `copy_folder.py` recursively copies all of the files within a folder
+ * `view_doc.py` outputs the text from a Google Doc
+ * `count_words.py` recursively counts the total number of words of all of the Google Docs within a folder
+ * After running one of the above scripts, `credentials.py` gets the OAuth2 client ID of the user who signed in and gave permission to the script

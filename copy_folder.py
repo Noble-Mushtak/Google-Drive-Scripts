@@ -1,9 +1,5 @@
-import sys
-import pickle
-import os.path
 from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
+from credentials import get_credentials
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ["https://www.googleapis.com/auth/drive"]
@@ -13,23 +9,8 @@ folder_mime_type = "application/vnd.google-apps.folder"
 root_folder_name = "My Drive"
 
 def main():
-    creds = None
-    # If token.pickle exists, then load the saved credentials from the pickle file:
-    if os.path.exists("token.pickle"):
-        with open("token.pickle", "rb") as token:
-            creds = pickle.load(token)
-            
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                "credentials.json", SCOPES)
-            creds = flow.run_local_server()
-        # Save the credentials in token.pickle for the next run
-        with open("token.pickle", "wb") as token:
-            pickle.dump(creds, token)
+    # Get the user's credentials:
+    creds = get_credentials(SCOPES)
             
     # Initialize the Drive v3 API
     service = build("drive", "v3", credentials=creds)
