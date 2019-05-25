@@ -16,7 +16,10 @@ def main():
     folder_name = input("Enter the name of the folder: ")
     # Then, get the folder and calculate the size:
     folder = get_folder(drive_service, folder_name)
-    print(calc_size(drive_service, folder, 0)[1])
+    size, info_string = calc_size(drive_service, folder, 0)
+    # At the end, print the info_string:
+    print()
+    print(info_string)
 
 def begin_calculation(drive_service, folder, level):
     print("Started calculating size of", folder.get("name"), "folder")
@@ -32,7 +35,7 @@ def end_calculation(drive_service, folder, tpl, level):
     num_bytes = tpl[0]
     # Print string describing folder
     str_ = ""
-    if num_bytes > 0:
+    if (level == 0) or (num_bytes > 0):
         if level > 0:
             str_ += " >"*level+" "
         str_ += folder.get("name")+" folder contains "+str(num_bytes)+" bytes\n"
