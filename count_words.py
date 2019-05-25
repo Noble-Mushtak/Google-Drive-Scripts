@@ -1,14 +1,9 @@
 from googleapiclient.discovery import build
-from credentials import get_credentials
 from view_doc import get_doc_text
-from copy_folder import get_folder
+from utilities import *
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/drive']
-# MIME type of Google Drive folder:
-folder_mime_type = "application/vnd.google-apps.folder"
-# MIME type of Google Docs:
-doc_mime_type = "application/vnd.google-apps.document"
 
 def main():
     # Get the user's credentials:
@@ -23,30 +18,32 @@ def main():
     folder_name = input("Enter the name of the folder: ")
     # Then, get the folder and count the number of words:
     folder = get_folder(drive_service, folder_name)
-    count_words(drive_service, docs_service, folder)
+    count_words(drive_service, folder, docs_service)
 
-def count_words(drive_service, docs_service, folder):
+def begin_counting(drive_service, folder, docs_service):
     print("Started counting words in", folder.get("name"), "folder")
-    # This stores the total number of words in this folder:
-    total = 0
-    
-    # Get all of the files in this folder:
-    results = drive_service.files().list(q="'"+folder.get("id")+"' in parents", fields="files(id, name, mimeType)").execute()
-    items = results.get("files", [])
-    
-    # Copy every file in this folder:
-    for file in items:
-        # Make a recursive call if this file is a folder:
-        if file.get("mimeType") == folder_mime_type:
-            total += count_words(drive_service, docs_service, file)
-        # If this is a Google Doc, output the number of words:
-        if file.get("mimeType") == doc_mime_type:
+    # No additional arguments:
+    return ()
+
+def end_counting(folder, num_words):
+    print(folder.get("name"), "folder contains", num_words, "words")
+
+@recurse_folder(begin_counting, end_counting)
+def count_words(drive_service, file, docs_service):
+    # Make a recursive call if this file is a folder:
+    if file.get("mimeType") == folder_mime_type:
+        return count_words(drive_service, file, docs_service)
+    # If this is a Google Doc, return the number of words:
+    if file.get("mimeType") == doc_mime_type:
+        try:
             word_count = len(get_doc_text(docs_service, file.get("id")).split())
             print(file.get("name"), "contains", word_count, "words")
-            total += word_count
-    # Finally, return the total:
-    print(folder.get("name"), "folder contains", total, "words")
-    return total
+            return word_count
+        except:
+            print("Error counting", file.get("name"))
+            
+    # If nothing has been returned at this point, just return 0
+    return 0
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

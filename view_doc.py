@@ -18,7 +18,7 @@ Source: https://developers.google.com/docs/api/samples/extract-text
 """
 
 from googleapiclient.discovery import build
-from credentials import get_credentials
+from utilities import *
 
 # MIME type of Google Docs:
 doc_mime_type = "application/vnd.google-apps.document"
