@@ -37,8 +37,10 @@ def begin_copying(drive_service, folder, new_folder):
     # Use folder_copy as additional argument:
     return (folder_copy,)
 
-def end_copying(folder, total):
+def end_copying(drive_service, folder, total, *args):
     print("Finished copying folder", folder.get("name"))
+    # Do not change return value
+    return total
 
 @recurse_folder(begin_copying, end_copying)
 def copy_folder(drive_service, file, new_folder, folder_copy):

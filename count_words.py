@@ -25,8 +25,10 @@ def begin_counting(drive_service, folder, docs_service):
     # No additional arguments:
     return ()
 
-def end_counting(folder, num_words):
+def end_counting(drive_service, folder, num_words, *args):
     print(folder.get("name"), "folder contains", num_words, "words")
+    # Do not change return value
+    return num_words
 
 @recurse_folder(begin_counting, end_counting)
 def count_words(drive_service, file, docs_service):

@@ -91,17 +91,19 @@ def recurse_folder(begin_recursion, end_recursion, identity=0, operation=operato
             pageToken = None
 
             while pageToken != "":
+                # This is the info we want from each folder:
+                fields_string = "nextPageToken, files(id, size, name, mimeType)"
                 # Get all of the files in this folder using the page token, if necessary:
                 if pageToken == None:
                     results = drive_service.files().list(
                         q="'"+folder.get("id")+"' in parents",
-                        fields="nextPageToken, files(id, name, mimeType)"
+                        fields=fields_string
                     ).execute()
                 else:
                     results = drive_service.files().list(
                         q="'"+folder.get("id")+"' in parents",
                         pageToken=pageToken,
-                        fields="nextPageToken, files(id, name, mimeType)"
+                        fields=fields_string
                     ).execute()
                 items = results.get("files", [])
                 pageToken = results.get("nextPageToken", "")
@@ -113,7 +115,7 @@ def recurse_folder(begin_recursion, end_recursion, identity=0, operation=operato
                     )
            
             # Finally, return the total:
-            end_recursion(folder, total)
+            total = end_recursion(drive_service, folder, total, *args)
             return total
         # The dectorator must return the wrapper
         return wrapper
