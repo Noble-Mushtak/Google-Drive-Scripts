@@ -49,12 +49,15 @@ def copy_folder(drive_service, file, new_folder, folder_copy):
         copy_folder(drive_service, file, folder_copy)
     # Otherwise, just make a normal copy by copying the file and putting it in the right folder:
     else:
-        metadata = {
-            "name": file.get("name"),
-            "parents": [folder_copy.get("id")]
-        }
-        new_file = drive_service.files().copy(body=metadata, fileId=file.get("id"), fields="id, name, mimeType").execute()
-        print("Copied file", file.get("name"))
+        try:
+            metadata = {
+                "name": file.get("name"),
+                "parents": [folder_copy.get("id")]
+            }
+            new_file = drive_service.files().copy(body=metadata, fileId=file.get("id"), fields="id, name, mimeType").execute()
+            print("Copied file", file.get("name"))
+        except:
+            print("Error copying", file.get("name"))
     # Return value is ignored, so just return 0:
     return 0
 
